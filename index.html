@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BioTalus — Plantilla Anatómica</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg1: #071026;
+            --bg2: #07182a;
+            --card: #0b1220;
+            --accent1: #ff6b6b;
+            --accent2: #6b9cff;
+            --muted: #98a0b3;
+            --neon-blue: #6be7ff;
+            --neon-purple: #b36bff;
+            --neon-green: #6bffb3;
+            --neon-pink: #ff6bd5;
+            --neon-cyan: #6bfff0;
+            --neon-yellow: #ffeb6b;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(180deg, var(--bg1), var(--bg2));
+            color: #e6eef8;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        
+        .wrapper {
+            width: 100%;
+            max-width: 1100px;
+            margin-bottom: 40px;
+        }
+        
+        .card {
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border-radius: 16px;
+            padding: 22px;
+            box-shadow: 0 10px 40px rgba(2,6,23,0.6);
+            border: 1px solid rgba(255,255,255,0.03);
+        }
+        
+        /* Layout */
+        .intro {
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        @media (max-width: 920px) {
+            .intro {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .title {
+            font-size: 26px;
+            margin: 0 0 6px 0;
+        }
+        
+        .subtitle {
+            color: var(--muted);
+            margin: 0 0 20px;
+        }
+        
+        .small {
+            font-size: 13px;
+            color: var(--muted);
+        }
+        
+        /* Insole visual */
+        .insole-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        
+        .insole {
+            width: 320px;
+            height: 520px;
+            border-radius: 28px;
+            background: linear-gradient(180deg, #071a34, #0a1030);
+            position: relative;
+            padding: 18px;
+            box-shadow: inset 0 2px 8px rgba(255,255,255,0.02);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            overflow: hidden;
+        }
+        
+        .foot-outline {
+            position: absolute;
+            width: 220px;
+            height: 420px;
+            top: 50px;
+            z-index: 1;
+            opacity: 0.15;
+        }
+        
+        /* Sensor positioning */
+        .sensor-dot {
+            position: absolute;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.9);
+            font-size: 14px;
+            font-weight: bold;
+            border: 1px solid;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+        
+        .sensor-dot:hover {
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+        
+        /* Colores neón sutiles para sensores */
+        .sensor-1 { /* Dedo gordo */
+            left: 31%;
+            top: 13%;
+            background: rgba(107, 231, 255, 0.1);
+            border-color: rgba(107, 231, 255, 0.3);
+            box-shadow: 0 0 10px rgba(107, 231, 255, 0.1);
+        }
+        
+        .sensor-2 { /* Dedo central */
+            left: 44%;
+            top: 16%;
+            background: rgba(179, 107, 255, 0.1);
+            border-color: rgba(179, 107, 255, 0.3);
+            box-shadow: 0 0 10px rgba(179, 107, 255, 0.1);
+        }
+        
+        .sensor-3 { /* Dedo pequeño */
+            left: 56%;
+            top: 20%;
+            background: rgba(107, 255, 179, 0.1);
+            border-color: rgba(107, 255, 179, 0.3);
+            box-shadow: 0 0 10px rgba(107, 255, 179, 0.1);
+        }
+        
+        .sensor-4 { /* Arco superior */
+            left: 53%;
+            top: 40%;
+            background: rgba(255, 107, 213, 0.1);
+            border-color: rgba(255, 107, 213, 0.3);
+            box-shadow: 0 0 10px rgba(255, 107, 213, 0.1);
+        }
+        
+        .sensor-5 { /* Arco inferior */
+            left: 56%;
+            top: 55%;
+            background: rgba(107, 255, 240, 0.1);
+            border-color: rgba(107, 255, 240, 0.3);
+            box-shadow: 0 0 10px rgba(107, 255, 240, 0.1);
+        }
+        
+        .sensor-6 { /* Talón */
+            left: 49%;
+            top: 80%;
+            background: rgba(255, 235, 107, 0.1);
+            border-color: rgba(255, 235, 107, 0.3);
+            box-shadow: 0 0 10px rgba(255, 235, 107, 0.1);
+        }
+        
+        .pulse {
+            animation: pulse 1.6s infinite ease-in-out;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { 
+                transform: scale(1.18); 
+                box-shadow: 0 0 20px 5px rgba(255,255,255,0.2);
+            }
+            100% { transform: scale(1); }
+        }
+        
+        /* Features row */
+        .features {
+            display: flex;
+            gap: 16px;
+            margin-top: 18px;
+            justify-content: space-between;
+        }
+        
+        .feature {
+            flex: 1;
+            background: transparent;
+            padding: 18px;
+            border-radius: 12px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .feature:hover {
+            transform: translateY(-5px);
+        }
+        
+        .icon-wrap {
+            width: 64px;
+            height: 64px;
+            border-radius: 12px;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border: 1px solid rgba(255,255,255,0.02);
+        }
+        
+        .feature h4 {
+            margin: 6px 0 6px;
+            font-size: 16px;
+        }
+        
+        .feature p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        
+        .float-title {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+        
+        /* Sensor info panel */
+        .sensor-info {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.03);
+            font-size: 14px;
+            color: var(--muted);
+            display: none;
+        }
+        
+        .sensor-info.active {
+            display: block;
+        }
+        
+        .sensor-info h3 {
+            margin-bottom: 10px;
+            color: #e6eef8;
+            font-size: 16px;
+        }
+        
+        .sensor-info p {
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        
+        .anatomy-label {
+            position: absolute;
+            font-size: 11px;
+            color: rgba(255,255,255,0.5);
+            z-index: 1;
+        }
+        
+        .sensor-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+        
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .zone-indicator {
+            position: absolute;
+            font-size: 10px;
+            color: rgba(255,255,255,0.3);
+            z-index: 1;
+            background: rgba(0,0,0,0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        /* Botón de inicio de sesión - MEJORADO */
+        .login-btn {
+            background: linear-gradient(90deg, var(--accent1), var(--accent2));
+            color: #071026;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(107, 155, 255, 0.3);
+            letter-spacing: 0.5px;
+            margin-bottom: 25px;
+            display: inline-block;
+            text-decoration: none;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(107, 155, 255, 0.4);
+        }
+        
+        /* Pie de página */
+        .footer {
+            text-align: center;
+            color: var(--muted);
+            font-size: 14px;
+            margin-top: 10px;
+            padding: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper card">
+        <div class="intro">
+            <!-- LEFT: textual intro + features -->
+            <div>
+                <h2 class="title float-title">Bienvenido a <strong>BioTalus</strong></h2>
+                <p class="subtitle">Plantilla de Prevención Inteligente para Detectar Sobrecarga en la Planta del Pie en Bailarines.</p>
+
+                <!-- Botón de inicio de sesión - POSICIONADO AQUÍ -->
+
+                <a href="perfil.html" class="login-btn">INICIAR SESIÓN</a>
+
+                <!-- features row -->
+                <div class="features" style="margin-top:18px">
+                    <div class="feature">
+                        <div class="icon-wrap">📈</div>
+                        <h4>Carga en Tiempo Real</h4>
+                        <p>Sensores en plantillas que miden presión en tobillo, antepié y talón durante saltos y giros.</p>
+                    </div>
+                    <div class="feature">
+                        <div class="icon-wrap">🛡️</div>
+                        <h4>Prevención de Lesiones</h4>
+                        <p>Detecta sobrecargas repetitivas y asimetrías antes de que duelan, para que sigas bailando.</p>
+                    </div>
+                    <div class="feature">
+                        <div class="icon-wrap">👯</div>
+                        <h4>Diseñado para Bailarines</h4>
+                        <p>Simple, portátil y listo para el escenario. Guarda sesiones y compara evolución.</p>
+                    </div>
+                </div>
+                
+                <!-- Sensor info panel -->
+                <div id="sensorInfo" class="sensor-info">
+                    <h3 id="sensorTitle">Sensor</h3>
+                    <p id="sensorDescription">Haz clic en un sensor para ver información detallada.</p>
+                    <p id="sensorFunction">Función: -</p>
+                    <p id="sensorLocation">Ubicación anatómica: -</p>
+                </div>
+                
+                <!-- Sensor legend -->
+                <div class="sensor-legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: rgba(107, 231, 255, 0.3);"></div>
+                        <span>1-3: Zona de dedos</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: rgba(255, 107, 213, 0.3);"></div>
+                        <span>4-5: Arco del pie</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: rgba(255, 235, 107, 0.3);"></div>
+                        <span>6: Talón</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: plantilla visual con sensores -->
+            <div class="insole-container">
+                <div class="insole" aria-hidden="false">
+                    <!-- Foot outline -->
+                    <svg class="foot-outline" viewBox="0 0 140 300" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M40 10 C20 10 10 40 10 70 C10 110 40 140 35 180 C30 220 18 260 50 290 C86 325 110 285 120 250 C130 215 120 180 110 150 C100 120 110 90 110 60 C110 40 100 10 80 10 C60 10 50 10 40 10 Z" fill="#fff"/>
+                    </svg>
+                    
+                    <!-- Zone indicators -->
+                    <div class="zone-indicator" style="left: 35%; top: 12%;">Zona de dedos</div>
+                    <div class="zone-indicator" style="left: 35%; top: 49%;">Arco del pie</div>
+                    <div class="zone-indicator" style="left: 45%; top: 75%;">Talón</div>
+                    
+                    <!-- Sensor dots -->
+                    <div class="sensor-dot sensor-1" data-sensor="1">1</div>
+                    <div class="sensor-dot sensor-2" data-sensor="2">2</div>
+                    <div class="sensor-dot sensor-3" data-sensor="3">3</div>
+                    <div class="sensor-dot sensor-4" data-sensor="4">4</div>
+                    <div class="sensor-dot sensor-5" data-sensor="5">5</div>
+                    <div class="sensor-dot sensor-6" data-sensor="6">6</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pie de página -->
+    <div class="footer">
+        <p>&copy; 2025 BioTalus. Todos los derechos reservados.</p>
+    </div>
+
+    <script>
+        // Sensor information
+        const sensorData = {
+            '1': {
+                title: 'Sensor 1 - Dedo gordo (Hallux)',
+                description: 'Sensor ubicado bajo el dedo gordo del pie.',
+                function: 'Mide la presión durante el despegue y en posiciones de punta.',
+                location: 'Zona medial del antepié, crucial para la propulsión'
+            },
+            '2': {
+                title: 'Sensor 2 - Dedo central',
+                description: 'Sensor ubicado en la zona central de los dedos.',
+                function: 'Registra la distribución de presión en el antepié.',
+                location: 'Zona central del antepié, importante para el equilibrio'
+            },
+            '3': {
+                title: 'Sensor 3 - Dedo pequeño',
+                description: 'Sensor ubicado bajo el dedo pequeño del pie.',
+                function: 'Mide la presión en el borde lateral durante giros.',
+                location: 'Zona lateral del antepié, clave para la estabilidad'
+            },
+            '4': {
+                title: 'Sensor 4 - Arco superior',
+                description: 'Sensor ubicado en la parte superior del arco plantar.',
+                function: 'Monitoriza la elevación del arco durante el movimiento.',
+                location: 'Parte medial del arco, entre antepié y retropié'
+            },
+            '5': {
+                title: 'Sensor 5 - Arco inferior',
+                description: 'Sensor ubicado en la parte inferior del arco plantar.',
+                function: 'Detecta el colapso del arco y sobrecargas mediales.',
+                location: 'Parte lateral del arco, zona de transición'
+            },
+            '6': {
+                title: 'Sensor 6 - Talón',
+                description: 'Sensor ubicado en el centro del talón.',
+                function: 'Registra el impacto inicial y distribución de carga.',
+                location: 'Zona central del talón, primer punto de contacto'
+            }
+        };
+
+        // Add click events to sensors
+        document.querySelectorAll('.sensor-dot').forEach(sensor => {
+            sensor.addEventListener('click', function() {
+                const sensorType = this.getAttribute('data-sensor');
+                const info = sensorData[sensorType];
+                
+                // Update sensor info panel
+                document.getElementById('sensorTitle').textContent = info.title;
+                document.getElementById('sensorDescription').textContent = info.description;
+                document.getElementById('sensorFunction').textContent = 'Función: ' + info.function;
+                document.getElementById('sensorLocation').textContent = 'Ubicación anatómica: ' + info.location;
+                
+                // Show the info panel
+                document.getElementById('sensorInfo').classList.add('active');
+                
+                // Add pulse effect to clicked sensor
+                this.classList.add('pulse');
+                setTimeout(() => {
+                    this.classList.remove('pulse');
+                }, 1600);
+            });
+        });
+
+        // Initial pulse effect
+        setTimeout(() => {
+            document.querySelectorAll('.sensor-dot').forEach(dot => {
+                dot.classList.add('pulse');
+                setTimeout(() => {
+                    dot.classList.remove('pulse');
+                }, 1600);
+            });
+        }, 500);
+    </script>
+</body>
+</html>

@@ -1,0 +1,2805 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuración - BioTalus Pro</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #0a0a0a;
+            color: #f0f0f0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin-top: 30px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            font-weight: 300;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        
+        .header-subtitle {
+            color: #00e5ff;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .steps-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        
+        .steps-container::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: #333;
+            z-index: 1;
+        }
+        
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 2;
+            width: 24%;
+        }
+        
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #1a1a1a;
+            border: 2px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .step.active .step-circle {
+            background-color: #0a0a0a;
+            border-color: #00e5ff;
+            color: #00e5ff;
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+        }
+        
+        .step.completed .step-circle {
+            background-color: #00e5ff;
+            border-color: #00e5ff;
+            color: #0a0a0a;
+        }
+        
+        .step-label {
+            font-size: 12px;
+            color: #888;
+            text-align: center;
+        }
+        
+        .step.active .step-label {
+            color: #f0f0f0;
+        }
+        
+        .section {
+            background-color: #1a1a1a;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            display: none;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #f0f0f0;
+            font-weight: 500;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #ccc;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 6px;
+            color: #f0f0f0;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: '#00e5ff';
+            box-shadow: 0 0 5px rgba(0, 229, 255, 0.3);
+        }
+        
+        .info-text {
+            font-size: 13px;
+            color: #888;
+            margin-top: 5px;
+        }
+        
+        .buttons-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-volver {
+            background-color: transparent;
+            color: #888;
+            border: 1px solid #333;
+        }
+        
+        .btn-volver:hover {
+            background-color: #1a1a1a;
+            color: #f0f0f0;
+            border-color: #555;
+        }
+        
+        .btn-siguiente {
+            background-color: #00e5ff;
+            color: #0a0a0a;
+        }
+        
+        .btn-siguiente:hover {
+            background-color: #00c4e0;
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+        }
+        
+        .btn-calibrar {
+            background-color: #ff6b00;
+            color: #0a0a0a;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        
+        .btn-calibrar:hover {
+            background-color: #ff8c00;
+            box-shadow: 0 0 10px rgba(255, 107, 0, 0.5);
+        }
+        
+        .btn-calibrar-secondary {
+            background-color: #333;
+            color: #f0f0f0;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        
+        .btn-calibrar-secondary:hover {
+            background-color: #444;
+            border-color: #555;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .status-container {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #0a0a0a;
+            border-radius: 6px;
+            border: 1px solid #333;
+        }
+        
+        /* Estilos para calibración */
+        .instructions {
+            background-color: #0a0a0a;
+            border-left: 4px solid #00e5ff;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .instructions h3 {
+            color: #00e5ff;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .instructions ol {
+            padding-left: 20px;
+            line-height: 1.6;
+            color: #ccc;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .sensor-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .sensor-item {
+            background-color: #0a0a0a;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #333;
+            transition: all 0.3s ease;
+        }
+        
+        .sensor-item.active {
+            border-color: #00e5ff;
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
+        }
+        
+        .sensor-value {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 10px 0;
+            color: #00e5ff;
+        }
+        
+        .sensor-label {
+            font-size: 14px;
+            color: #ccc;
+            margin-bottom: 5px;
+        }
+        
+        .sensor-offset {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        /* Estilos para MPU6050 */
+        .mpu-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .mpu-item {
+            background-color: #0a0a0a;
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #333;
+        }
+        
+        .mpu-title {
+            color: #00e5ff;
+            font-size: 14px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .mpu-values {
+            font-size: 12px;
+            color: #ccc;
+            line-height: 1.5;
+        }
+        
+        .mpu-values div {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .progress-container {
+            margin: 20px 0;
+            display: none;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: #333;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: #00e5ff;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-text {
+            text-align: center;
+            font-size: 14px;
+            color: #ccc;
+        }
+        
+        .calibration-complete {
+            background-color: rgba(0, 255, 136, 0.1);
+            border: 1px solid #00ff88;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+            display: none;
+        }
+        
+        .calibration-complete h3 {
+            color: #00ff88;
+            margin-bottom: 10px;
+        }
+        
+        .calibration-complete p {
+            color: #ccc;
+            line-height: 1.5;
+        }
+        
+        .calibration-results {
+            margin-top: 15px;
+            text-align: left;
+            font-size: 12px;
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 6px;
+            color: #888;
+        }
+        
+        /* Estilos para pantalla de inicio - NUEVOS */
+        .completion-message {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .completion-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            color: #00ff88;
+        }
+        
+        .completion-text {
+            font-size: 18px;
+            margin-bottom: 30px;
+            color: #ccc;
+        }
+        
+        /* Dashboard */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .dashboard-title {
+            font-size: 20px;
+            color: #00e5ff;
+        }
+        
+        .dashboard-subtitle {
+            color: #888;
+            font-size: 14px;
+        }
+        
+        .sensor-values-panel {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .value-display {
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #333;
+        }
+        
+        .value-display-title {
+            color: #00e5ff;
+            font-size: 14px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .value-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        
+        .value-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(51, 51, 51, 0.5);
+        }
+        
+        .value-label {
+            color: #ccc;
+            font-size: 12px;
+        }
+        
+        .value-number {
+            color: #00e5ff;
+            font-weight: 500;
+            font-size: 13px;
+        }
+        
+        .control-panel {
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #333;
+        }
+        
+        .control-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .control-btn {
+            padding: 8px 15px;
+            background-color: #333;
+            border: none;
+            border-radius: 6px;
+            color: #f0f0f0;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .control-btn:hover {
+            background-color: #444;
+        }
+        
+        .control-btn.active {
+            background-color: #00e5ff;
+            color: #0a0a0a;
+        }
+        
+        .control-btn.start {
+            background-color: #00ff88;
+            color: #0a0a0a;
+        }
+        
+        .control-btn.stop {
+            background-color: #ff4444;
+            color: #f0f0f0;
+        }
+        
+        .data-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .last-update {
+            color: #00e5ff;
+        }
+        
+        .data-count {
+            color: #ccc;
+        }
+        
+        /* Tabs para calibración */
+        .calibration-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .tab-btn {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            font-size: 14px;
+            position: relative;
+        }
+        
+        .tab-btn.active {
+            color: #00e5ff;
+        }
+        
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: #00e5ff;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .warning-box {
+            background-color: rgba(255, 107, 0, 0.1);
+            border: 1px solid #ff6b00;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #ff8c00;
+        }
+        
+        .warning-box h4 {
+            margin-bottom: 8px;
+            color: #ff8c00;
+        }
+        
+        /* Nuevos estilos para lista de datos MEJORADA */
+        .data-history-container {
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            border: 1px solid #333;
+        }
+        
+        .data-history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .data-history-title {
+            color: #00e5ff;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        .data-history-subtitle {
+            color: #888;
+            font-size: 12px;
+        }
+        
+        .data-list-container {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 10px;
+            border-radius: 6px;
+            background-color: #0a0a0a;
+            border: 1px solid #333;
+        }
+        
+        .data-list {
+            list-style: none;
+        }
+        
+        .data-item {
+            padding: 15px;
+            border-bottom: 1px solid #333;
+            transition: background-color 0.3s;
+        }
+        
+        .data-item:hover {
+            background-color: rgba(26, 26, 26, 0.5);
+        }
+        
+        .data-item:last-child {
+            border-bottom: none;
+        }
+        
+        .data-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(51, 51, 51, 0.5);
+        }
+        
+        .data-timestamp {
+            color: #00ff88;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .data-uptime {
+            color: #ff6b00;
+            font-size: 12px;
+            background-color: rgba(255, 107, 0, 0.1);
+            padding: 3px 8px;
+            border-radius: 10px;
+        }
+        
+        .data-content {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        
+        .data-section {
+            background-color: rgba(26, 26, 26, 0.5);
+            border-radius: 6px;
+            padding: 10px;
+        }
+        
+        .data-section-title {
+            color: #00e5ff;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .data-values-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 5px;
+        }
+        
+        .data-value-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(51, 51, 51, 0.3);
+        }
+        
+        .data-value-row:last-child {
+            border-bottom: none;
+        }
+        
+        .data-value-label {
+            color: #ccc;
+            font-size: 11px;
+        }
+        
+        .data-value-number {
+            color: #00e5ff;
+            font-weight: 500;
+            font-size: 11px;
+        }
+        
+        .data-value-high {
+            color: #ff6b00;
+        }
+        
+        .data-value-low {
+            color: #888;
+        }
+        
+        .no-data-message {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+            font-style: italic;
+        }
+        
+        /* Scrollbar personalizado */
+        .data-list-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .data-list-container::-webkit-scrollbar-track {
+            background: #1a1a1a;
+            border-radius: 4px;
+        }
+        
+        .data-list-container::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+        
+        .data-list-container::-webkit-scrollbar-thumb:hover {
+            background: #444;
+        }
+        
+        /* Estilos para gráficas */
+        .chart-container {
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #333;
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .chart-title {
+            color: #00e5ff;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        .chart-subtitle {
+            color: #888;
+            font-size: 12px;
+        }
+        
+        .chart-wrapper {
+            position: relative;
+            height: 250px;
+            width: 100%;
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .data-content {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sensor-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .sensor-values-panel {
+                grid-template-columns: 1fr;
+            }
+            
+            .control-buttons {
+                flex-direction: column;
+            }
+            
+            .mpu-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .data-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .data-values-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .data-values-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .data-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Asistente de configuración BioTalus Pro</h1>
+            <div class="header-subtitle">Pequeños sensores, grandes impactos</div>
+        </div>
+        
+        <div class="steps-container">
+            <div class="step active" id="step1">
+                <div class="step-circle">1</div>
+                <div class="step-label">Perfil</div>
+            </div>
+            <div class="step" id="step2">
+                <div class="step-circle">2</div>
+                <div class="step-label">Conexión</div>
+            </div>
+            <div class="step" id="step3">
+                <div class="step-circle">3</div>
+                <div class="step-label">Calibración</div>
+            </div>
+            <div class="step" id="step4">
+                <div class="step-circle">4</div>
+                <div class="step-label">Dashboard</div>
+            </div>
+        </div>
+        
+        <!-- Sección 1: Perfil -->
+        <div class="section active" id="perfilSection">
+            <h2 class="section-title">USUARIO</h2>
+            
+            <div class="input-group">
+                <label for="nombre">Nombre de usuario</label>
+                <input type="text" id="nombre" placeholder="Ingresa tu nombre de usuario">
+            </div>
+            <div class="input-group">
+                <label for="fecha">Fecha de configuración</label>
+                <input type="text" id="fecha" readonly>
+            </div>
+        </div>
+        
+        <!-- Sección 2: Conexión Bluetooth -->
+        <div class="section" id="conexionSection">
+            <h2 class="section-title">CONEXIÓN BLUETOOTH</h2>
+            
+            <p style="color: #ccc; margin-bottom: 20px; font-size: 14px; line-height: 1.5;">
+                Buscando dispositivo ESP32 "BioTalus-Pro" via Bluetooth LE...
+                <br>Asegúrate de que tu ESP32 esté encendido y en modo visible.
+            </p>
+            
+            <div class="input-group">
+                <button class="btn btn-siguiente" id="buscarDispositivoBtn" style="width: 100%; margin-bottom: 10px;">
+                    🔍 Buscar Dispositivo BioTalus-Pro
+                </button>
+            </div>
+            
+            <div class="status-container">
+                <div style="font-size: 14px; color: #ccc; margin-bottom: 5px;">Estado Bluetooth:</div>
+                <div id="estadoBusqueda" style="font-size: 14px; font-weight: 500; color: #ff4444;">
+                    Esperando inicio de búsqueda...
+                </div>
+                <div id="detallesDispositivo" style="font-size: 12px; color: #888; margin-top: 8px;"></div>
+            </div>
+        </div>
+        
+        <!-- Sección 3: Calibración COMPLETA -->
+        <div class="section" id="calibracionSection">
+            <h2 class="section-title">CALIBRACIÓN COMPLETA DEL SISTEMA</h2>
+            
+            <div class="calibration-tabs">
+                <button class="tab-btn active" data-tab="tab-info">📋 Información</button>
+                <button class="tab-btn" data-tab="tab-fsr">🦶 Sensores FSR</button>
+                <button class="tab-btn" data-tab="tab-mpu">📐 MPU6050</button>
+                <button class="tab-btn" data-tab="tab-results">📊 Resultados</button>
+            </div>
+            
+            <!-- Tab 1: Información -->
+            <div class="tab-content active" id="tab-info">
+                <div class="instructions">
+                    <h3>INSTRUCCIONES DE CALIBRACIÓN</h3>
+                    <ol>
+                        <li>Coloca el dispositivo en una superficie plana y nivelada</li>
+                        <li>Para MPU6050: Mantén el dispositivo completamente estático</li>
+                        <li>La calibración tarda aproximadamente 30 segundos</li>
+                        <li>No muevas el dispositivo durante el proceso</li>
+                    </ol>
+                </div>
+                
+                <div class="warning-box">
+                    <h4>⚠ ATENCIÓN IMPORTANTE</h4>
+                    <p>Para una calibración precisa del MPU6050:</p>
+                    <ul style="margin-top: 5px; padding-left: 20px;">
+                        <li>El dispositivo debe estar perfectamente nivelado</li>
+                        <li>Evita vibraciones o movimientos durante la calibración</li>
+                        <li>La temperatura ambiente debe ser estable</li>
+                    </ul>
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="btn btn-calibrar" id="calibrarTodoBtn" disabled>
+                        🚀 CALIBRACIÓN COMPLETA (FSR + MPU6050)
+                    </button>
+                    <p style="color: #888; font-size: 12px; margin-top: 10px;">
+                        Calibrará ambos sistemas simultáneamente
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Tab 2: Sensores FSR -->
+            <div class="tab-content" id="tab-fsr">
+                <h3 style="color: #00e5ff; margin-bottom: 15px;">SENSORES DE PRESIÓN FSR</h3>
+                
+                <div class="sensor-grid" id="sensorGrid">
+                    <!-- Sensores FSR se generan dinámicamente -->
+                </div>
+                
+                <div style="text-align: center; margin: 20px 0;">
+                    <button class="btn btn-calibrar-secondary" id="calibrarFSRBtn" disabled>
+                        🔧 Calibrar solo FSR
+                    </button>
+                    <p style="color: #888; font-size: 12px; margin-top: 10px;">
+                        Solo calibra los 6 sensores de presión
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Tab 3: MPU6050 -->
+            <div class="tab-content" id="tab-mpu">
+                <h3 style="color: #00e5ff; margin-bottom: 15px;">SENSOR DE MOVIMIENTO MPU6050</h3>
+                
+                <div class="mpu-container">
+                    <div class="mpu-item">
+                        <div class="mpu-title">ACELERÓMETRO (m/s²)</div>
+                        <div class="mpu-values">
+                            <div>X: <span id="accelX">0.00</span></div>
+                            <div>Y: <span id="accelY">0.00</span></div>
+                            <div>Z: <span id="accelZ">0.00</span></div>
+                            <div style="margin-top: 8px; color: #888;">Offsets:</div>
+                            <div>X: <span id="accelOffsetX">0.000</span></div>
+                            <div>Y: <span id="accelOffsetY">0.000</span></div>
+                            <div>Z: <span id="accelOffsetZ">0.000</span></div>
+                        </div>
+                    </div>
+                    
+                    <div class="mpu-item">
+                        <div class="mpu-title">GIROSCÓPIO (rad/s)</div>
+                        <div class="mpu-values">
+                            <div>X: <span id="gyroX">0.00000</span></div>
+                            <div>Y: <span id="gyroY">0.00000</span></div>
+                            <div>Z: <span id="gyroZ">0.00000</span></div>
+                            <div style="margin-top: 8px; color: #888;">Offsets:</div>
+                            <div>X: <span id="gyroOffsetX">0.00000</span></div>
+                            <div>Y: <span id="gyroOffsetY">0.00000</span></div>
+                            <div>Z: <span id="gyroOffsetZ">0.00000</span></div>
+                        </div>
+                    </div>
+                    
+                    <div class="mpu-item">
+                        <div class="mpu-title">TEMPERATURA</div>
+                        <div class="mpu-values">
+                            <div style="font-size: 24px; text-align: center; color: #ff6b00;">
+                                <span id="tempValue">0.0</span>°C
+                            </div>
+                            <div style="margin-top: 10px; color: #888;">Base: <span id="tempOffset">0.0</span>°C</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mpu-item">
+                        <div class="mpu-title">ESTADO MPU6050</div>
+                        <div class="mpu-values">
+                            <div id="mpuStatus" style="color: #ff4444;">No detectado</div>
+                            <div style="margin-top: 15px;">
+                                <button class="btn btn-calibrar-secondary" id="calibrarMPUBtn" disabled>
+                                    📐 Calibrar solo MPU6050
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 10px;">
+                    <p style="color: #888; font-size: 12px;">
+                        El eje Z debe mostrar aproximadamente 9.81 m/s² (gravedad)
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Tab 4: Resultados -->
+            <div class="tab-content" id="tab-results">
+                <h3 style="color: #00e5ff; margin-bottom: 15px;">RESULTADOS DE CALIBRACIÓN</h3>
+                
+                <div class="calibration-results" id="resultsFSR">
+                    <strong>FSR Offsets:</strong><br>
+                    <span id="resultsFSRText">No calibrado</span>
+                </div>
+                
+                <div class="calibration-results" id="resultsMPU">
+                    <strong>MPU6050 Offsets:</strong><br>
+                    <span id="resultsMPUText">No calibrado</span>
+                </div>
+                
+                <div class="calibration-complete" id="calibrationComplete" style="display: none;">
+                    <h3>✅ CALIBRACIÓN COMPLETADA</h3>
+                    <p>Todos los sensores han sido calibrados exitosamente.</p>
+                    <p style="font-size: 12px; color: #888; margin-top: 10px;">
+                        Los offsets han sido guardados en el dispositivo.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Barra de progreso común -->
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text" id="progressText">0%</div>
+                <div id="progressDetail" style="text-align: center; font-size: 12px; color: #888; margin-top: 5px;"></div>
+            </div>
+            
+            <div class="status-container">
+                <div style="font-size: 14px; color: #ccc; margin-bottom: 5px;">Estado Calibración:</div>
+                <div id="estadoCalibracion" style="font-size: 14px; font-weight: 500; color: #00e5ff;">
+                    Conecta el dispositivo primero
+                </div>
+                <div id="detallesCalibracion" style="font-size: 12px; color: #888; margin-top: 8px;"></div>
+            </div>
+        </div>
+        
+        <!-- Sección 4: Dashboard -->
+        <div class="section" id="inicioSection">
+            <div class="dashboard-header">
+                <div>
+                    <div class="dashboard-title">Sensor Dashboard</div>
+                    <div class="dashboard-subtitle">Monitorea en tiempo real los sensores de presión y movimiento después de calibrar</div>
+                </div>
+                <div style="color: #00ff88; font-size: 14px;">
+                    ✅ Sistema Calibrado
+                </div>
+            </div>
+            
+            <!-- Panel de valores actuales -->
+            <div class="sensor-values-panel">
+                <div class="value-display">
+                    <div class="value-display-title">
+                        <span style="color: #ff6b00;">🦶</span> Sensores de Presión FSR - Pie Derecho
+                    </div>
+                    <div class="value-grid" id="fsrValuesGrid">
+                        <!-- Valores FSR se generan dinámicamente -->
+                    </div>
+                </div>
+                
+                <div class="value-display">
+                    <div class="value-display-title">
+                        <span style="color: #00e5ff;">📊</span> Sensor MPU6050
+                    </div>
+                    <div class="value-grid">
+                        <div class="value-item">
+                            <span class="value-label">Accel X:</span>
+                            <span class="value-number" id="dashboardAccelX">0.00</span>
+                        </div>
+                        <div class="value-item">
+                            <span class="value-label">Accel Y:</span>
+                            <span class="value-number" id="dashboardAccelY">0.00</span>
+                        </div>
+                        <div class="value-item">
+                            <span class="value-label">Accel Z:</span>
+                            <span class="value-number" id="dashboardAccelZ">0.00</span>
+                        </div>
+                        <div class="value-item">
+                            <span class="value-label">Gyro X:</span>
+                            <span class="value-number" id="dashboardGyroX">0.00000</span>
+                        </div>
+                        <div class="value-item">
+                            <span class="value-label">Gyro Y:</span>
+                            <span class="value-number" id="dashboardGyroY">0.00000</span>
+                        </div>
+                        <div class="value-item">
+                            <span class="value-label">Gyro Z:</span>
+                            <span class="value-number" id="dashboardGyroZ">0.00000</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Panel de control -->
+            <div class="control-panel">
+                <div class="chart-header">
+                    <div>
+                        <div class="chart-title">Controles de Monitoreo</div>
+                        <div class="chart-subtitle">Inicia/Detén la captura de datos en tiempo real</div>
+                    </div>
+                    <div class="control-buttons">
+                        <button class="control-btn start" id="startMonitoringBtn">
+                            ▶ Iniciar Monitoreo
+                        </button>
+                        <button class="control-btn stop" id="stopMonitoringBtn" disabled>
+                            ⏸ Detener
+                        </button>
+                        <button class="control-btn" id="clearDataBtn">
+                            🗑 Limpiar Datos
+                        </button>
+                        <button class="control-btn" id="exportDataBtn">
+                            📥 Exportar CSV
+                        </button>
+                    </div>
+                </div>
+                <div class="data-info">
+                    <div class="last-update">Última actualización: <span id="lastUpdateTime">--:--:--</span></div>
+                    <div class="data-count">Datos: <span id="dataCount">0</span> muestras</div>
+                </div>
+            </div>
+            
+            <!-- Sección de Gráficas -->
+            <div class="charts-grid">
+                <!-- Gráfica 1: FSR en tiempo real -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div>
+                            <div class="chart-title">Presión Plantar en Tiempo Real</div>
+                            <div class="chart-subtitle">Valores de los 6 sensores FSR</div>
+                        </div>
+                        <div style="font-size: 12px; color: #00ff88;">
+                            Actualizando...
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="fsrChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Gráfica 2: Aceleración -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div>
+                            <div class="chart-title">Aceleración del Tobillo</div>
+                            <div class="chart-subtitle">Ejes X, Y, Z (m/s²)</div>
+                        </div>
+                        <div style="font-size: 12px; color: #ff6b00;">
+                            G: <span id="gravityValue">9.81</span> m/s²
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="accelChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Gráfica 3: Giroscopio -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div>
+                            <div class="chart-title">Velocidad Angular</div>
+                            <div class="chart-subtitle">Giroscopio en 3 ejes (°/s)</div>
+                        </div>
+                        <div style="font-size: 12px; color: #00e5ff;">
+                            Rotación
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="gyroChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Gráfica 4: Distribución de presión -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div>
+                            <div class="chart-title">Distribución de Presión</div>
+                            <div class="chart-subtitle">Porcentaje por zona del pie</div>
+                        </div>
+                        <div style="font-size: 12px; color: #ffd166;">
+                            Total: <span id="totalPressure">0</span>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="pressureChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Historial de datos MEJORADO -->
+            <div class="data-history-container">
+                <div class="data-history-header">
+                    <div>
+                        <div class="data-history-title">📊 Historial de Datos Completos</div>
+                        <div class="data-history-subtitle">Todos los sensores - Captura cada 5 segundos</div>
+                    </div>
+                    <div style="color: #00e5ff; font-size: 13px;">
+                        Total: <span id="totalDataCount">0</span> muestras
+                    </div>
+                </div>
+                
+                <div class="data-list-container" id="dataListContainer">
+                    <ul class="data-list" id="dataList">
+                        <li class="no-data-message" id="noDataMessage">
+                            No hay datos capturados aún. Inicia el monitoreo para comenzar a recopilar datos.
+                        </li>
+                    </ul>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; margin-top: 15px;">
+                    <div style="font-size: 11px; color: #888;">
+                        <span style="color: #ff6b00;">●</span> FSR > 50 = Alta presión
+                        <span style="margin-left: 15px; color: #00e5ff;">●</span> Valores normales
+                    </div>
+                    <div style="font-size: 11px; color: #ff6b00;">
+                        Última: <span id="lastCaptureTime">--:--:--</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Información del sistema -->
+            <div class="control-panel">
+                <div class="chart-header">
+                    <div>
+                        <div class="chart-title">Estado del Sistema</div>
+                        <div class="chart-subtitle">Información de conexión y calibración</div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 15px;">
+                    <div>
+                        <div style="color: #ccc; font-size: 13px; margin-bottom: 5px;">Usuario:</div>
+                        <div style="color: #00e5ff; font-size: 14px;" id="dashboardUsername">--</div>
+                    </div>
+                    <div>
+                        <div style="color: #ccc; font-size: 13px; margin-bottom: 5px;">Dispositivo:</div>
+                        <div style="color: #00e5ff; font-size: 14px;" id="dashboardDevice">No conectado</div>
+                    </div>
+                    <div>
+                        <div style="color: #ccc; font-size: 13px; margin-bottom: 5px;">Última calibración:</div>
+                        <div style="color: #00e5ff; font-size: 14px;" id="dashboardCalibration">No calibrado</div>
+                    </div>
+                    <div>
+                        <div style="color: #ccc; font-size: 13px; margin-bottom: 5px;">Tiempo activo:</div>
+                        <div style="color: #00ff88; font-size: 14px;" id="dashboardUptime">00:00:00</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="buttons-container">
+            <button class="btn btn-volver" id="volverBtn">Volver</button>
+            <button class="btn btn-siguiente" id="siguienteBtn">Siguiente</button>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // VARIABLES GLOBALES
+        // ============================================
+        let dispositivoBLE = null;
+        let servidorGATT = null;
+        let rxCharacteristic = null;
+        let txCharacteristic = null;
+        let currentStep = 1;
+        const totalSteps = 4;
+        
+        // Variables para calibración
+        let calibrationActive = false;
+        let calibrationType = '';
+        
+        // Datos de sensores
+        let sensorOffsets = [0, 0, 0, 0, 0, 0];
+        let sensorValues = [0, 0, 0, 0, 0, 0];
+        
+        // Datos MPU6050
+        let mpuData = {
+            accel: { x: 0, y: 0, z: 0 },
+            gyro: { x: 0, y: 0, z: 0 },
+            temp: 0,
+            offsets: {
+                accel: { x: 0, y: 0, z: 0 },
+                gyro: { x: 0, y: 0, z: 0 },
+                temp: 0
+            },
+            mpuDetected: false
+        };
+        
+        // Variables para monitoreo y datos
+        let monitoringActive = false;
+        let monitoringStartTime = null;
+        let savedData = []; // Array para guardar datos
+        let lastSaveTime = null;
+        const SAVE_INTERVAL = 5000; // Guardar cada 5 segundos
+        
+        // Variables para gráficas
+        let fsrChart, accelChart, gyroChart, pressureChart;
+        let chartDataBuffer = {
+            labels: [],
+            fsr: [[], [], [], [], [], []],
+            accel: [[], [], []],
+            gyro: [[], [], []]
+        };
+        const maxDataPoints = 50;
+        
+        // Colores para gráficas
+        const fsrColors = [
+            'rgba(255, 107, 107, 0.8)',
+            'rgba(78, 205, 196, 0.8)',
+            'rgba(69, 183, 209, 0.8)',
+            'rgba(255, 209, 102, 0.8)',
+            'rgba(6, 214, 160, 0.8)',
+            'rgba(239, 71, 111, 0.8)'
+        ];
+        
+        const accelColors = [
+            'rgba(255, 99, 132, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(54, 162, 235, 1)'
+        ];
+        
+        // ============================================
+        // ELEMENTOS DEL DOM
+        // ============================================
+        const sections = {
+            1: document.getElementById('perfilSection'),
+            2: document.getElementById('conexionSection'),
+            3: document.getElementById('calibracionSection'),
+            4: document.getElementById('inicioSection')
+        };
+        
+        const steps = {
+            1: document.getElementById('step1'),
+            2: document.getElementById('step2'),
+            3: document.getElementById('step3'),
+            4: document.getElementById('step4')
+        };
+        
+        // Botones principales
+        const siguienteBtn = document.getElementById('siguienteBtn');
+        const volverBtn = document.getElementById('volverBtn');
+        const buscarDispositivoBtn = document.getElementById('buscarDispositivoBtn');
+        
+        // Botones de calibración
+        const calibrarTodoBtn = document.getElementById('calibrarTodoBtn');
+        const calibrarFSRBtn = document.getElementById('calibrarFSRBtn');
+        const calibrarMPUBtn = document.getElementById('calibrarMPUBtn');
+        
+        // Elementos de estado
+        const estadoBusqueda = document.getElementById('estadoBusqueda');
+        const detallesDispositivo = document.getElementById('detallesDispositivo');
+        const estadoCalibracion = document.getElementById('estadoCalibracion');
+        const detallesCalibracion = document.getElementById('detallesCalibracion');
+        
+        // Elementos de calibración
+        const sensorGrid = document.getElementById('sensorGrid');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        const progressDetail = document.getElementById('progressDetail');
+        const calibrationComplete = document.getElementById('calibrationComplete');
+        
+        // Elementos MPU6050
+        const accelX = document.getElementById('accelX');
+        const accelY = document.getElementById('accelY');
+        const accelZ = document.getElementById('accelZ');
+        const accelOffsetX = document.getElementById('accelOffsetX');
+        const accelOffsetY = document.getElementById('accelOffsetY');
+        const accelOffsetZ = document.getElementById('accelOffsetZ');
+        const gyroX = document.getElementById('gyroX');
+        const gyroY = document.getElementById('gyroY');
+        const gyroZ = document.getElementById('gyroZ');
+        const gyroOffsetX = document.getElementById('gyroOffsetX');
+        const gyroOffsetY = document.getElementById('gyroOffsetY');
+        const gyroOffsetZ = document.getElementById('gyroOffsetZ');
+        const tempValue = document.getElementById('tempValue');
+        const tempOffset = document.getElementById('tempOffset');
+        const mpuStatus = document.getElementById('mpuStatus');
+        
+        // Resultados
+        const resultsFSRText = document.getElementById('resultsFSRText');
+        const resultsMPUText = document.getElementById('resultsMPUText');
+        
+        // Dashboard elements
+        const fsrValuesGrid = document.getElementById('fsrValuesGrid');
+        const dashboardAccelX = document.getElementById('dashboardAccelX');
+        const dashboardAccelY = document.getElementById('dashboardAccelY');
+        const dashboardAccelZ = document.getElementById('dashboardAccelZ');
+        const dashboardGyroX = document.getElementById('dashboardGyroX');
+        const dashboardGyroY = document.getElementById('dashboardGyroY');
+        const dashboardGyroZ = document.getElementById('dashboardGyroZ');
+        const startMonitoringBtn = document.getElementById('startMonitoringBtn');
+        const stopMonitoringBtn = document.getElementById('stopMonitoringBtn');
+        const clearDataBtn = document.getElementById('clearDataBtn');
+        const exportDataBtn = document.getElementById('exportDataBtn');
+        const dashboardUsername = document.getElementById('dashboardUsername');
+        const dashboardDevice = document.getElementById('dashboardDevice');
+        const dashboardCalibration = document.getElementById('dashboardCalibration');
+        const dashboardUptime = document.getElementById('dashboardUptime');
+        const lastUpdateTime = document.getElementById('lastUpdateTime');
+        const dataCount = document.getElementById('dataCount');
+        const gravityValue = document.getElementById('gravityValue');
+        const totalPressure = document.getElementById('totalPressure');
+        
+        // Elementos de lista de datos
+        const dataList = document.getElementById('dataList');
+        const noDataMessage = document.getElementById('noDataMessage');
+        const totalDataCount = document.getElementById('totalDataCount');
+        const dataListContainer = document.getElementById('dataListContainer');
+        const lastCaptureTime = document.getElementById('lastCaptureTime');
+        
+        // Tabs
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        // Input de nombre
+        const nombreInput = document.getElementById('nombre');
+        
+        // ============================================
+        // INICIALIZACIÓN
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mostrar fecha actual
+            const fechaInput = document.getElementById('fecha');
+            const ahora = new Date();
+            const opciones = { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            fechaInput.value = ahora.toLocaleDateString('es-ES', opciones);
+            
+            // Inicializar grid de sensores
+            inicializarSensores();
+            inicializarDashboardFSR();
+            
+            // Inicializar gráficas
+            inicializarGraficas();
+            
+            // Cargar datos guardados
+            cargarDatosGuardados();
+            
+            // Configurar tabs
+            configurarTabs();
+            
+            // Configurar validación del nombre
+            configurarValidacionNombre();
+            
+            // Configurar controles de monitoreo
+            configurarControlesMonitoreo();
+            
+            // Verificar soporte Bluetooth
+            if (!navigator.bluetooth) {
+                console.warn('Web Bluetooth API no está disponible');
+                buscarDispositivoBtn.disabled = true;
+                buscarDispositivoBtn.innerHTML = '⚠ Bluetooth no soportado';
+                buscarDispositivoBtn.style.backgroundColor = '#ff4444';
+            }
+            
+            // Iniciar actualización de valores (simulación hasta conectar)
+            setInterval(actualizarValoresDisplay, 500);
+            
+            // Configurar evento del botón Siguiente
+            siguienteBtn.addEventListener('click', function() {
+                if (currentStep === 1) {
+                    if (!validarNombreUsuario()) {
+                        alert('Por favor, ingresa un nombre de usuario válido.');
+                        nombreInput.focus();
+                        return;
+                    }
+                    cambiarPaso(2);
+                } else if (currentStep === 2) {
+                    cambiarPaso(3);
+                } else if (currentStep === 3) {
+                    cambiarPaso(4);
+                } else if (currentStep === 4) {
+                    finalizarConfiguracion();
+                }
+            });
+            
+            // Iniciar actualización de tiempo activo
+            setInterval(actualizarUptime, 1000);
+            
+            // Inicializar datos guardados
+            cargarDatosMonitoreo();
+            
+            // Si hay datos, mostrar última captura
+            if (savedData.length > 0) {
+                lastCaptureTime.textContent = savedData[0].time;
+            }
+            
+            // Inicializar actualización de tiempo
+            actualizarTiempo();
+            setInterval(actualizarTiempo, 1000);
+        });
+        
+        function configurarTabs() {
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    // Remover clase active de todos
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    // Activar tab seleccionado
+                    this.classList.add('active');
+                    document.getElementById(tabId).classList.add('active');
+                    
+                    // Si es tab de MPU, solicitar valores actuales
+                    if (tabId === 'tab-mpu' && dispositivoBLE) {
+                        setTimeout(() => enviarComando('GET_VALUES'), 100);
+                    }
+                });
+            });
+        }
+        
+        function configurarValidacionNombre() {
+            nombreInput.addEventListener('input', validarNombreUsuario);
+            nombreInput.addEventListener('blur', validarNombreUsuario);
+        }
+        
+        function configurarControlesMonitoreo() {
+            startMonitoringBtn.addEventListener('click', iniciarMonitoreo);
+            stopMonitoringBtn.addEventListener('click', detenerMonitoreo);
+            clearDataBtn.addEventListener('click', limpiarDatos);
+            exportDataBtn.addEventListener('click', exportarDatosCSV);
+        }
+        
+        function validarNombreUsuario() {
+            const nombre = nombreInput.value.trim();
+            const nombreValido = nombre.length > 0;
+            
+            if (currentStep === 1) {
+                siguienteBtn.disabled = !nombreValido;
+                
+                if (nombreValido) {
+                    nombreInput.style.borderColor = '#00e5ff';
+                    nombreInput.style.boxShadow = '0 0 5px rgba(0, 229, 255, 0.3)';
+                } else {
+                    nombreInput.style.borderColor = '#ff4444';
+                    nombreInput.style.boxShadow = '0 0 5px rgba(255, 68, 68, 0.3)';
+                }
+            }
+            
+            return nombreValido;
+        }
+        
+        function actualizarTiempo() {
+            const ahora = new Date();
+            const hora = ahora.toLocaleTimeString('es-ES', { 
+                hour12: false,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            lastUpdateTime.textContent = hora;
+        }
+        
+        // ============================================
+        // FUNCIONES DE NAVEGACIÓN
+        // ============================================
+        function cambiarPaso(nuevoPaso) {
+            if (nuevoPaso < 1 || nuevoPaso > totalSteps) return;
+            
+            sections[currentStep].classList.remove('active');
+            steps[currentStep].classList.remove('active');
+            
+            sections[nuevoPaso].classList.add('active');
+            steps[nuevoPaso].classList.add('active');
+            
+            for (let i = 1; i < nuevoPaso; i++) {
+                steps[i].classList.add('completed');
+            }
+            
+            for (let i = nuevoPaso + 1; i <= totalSteps; i++) {
+                steps[i].classList.remove('completed');
+            }
+            
+            actualizarBotones(nuevoPaso);
+            currentStep = nuevoPaso;
+            
+            if (nuevoPaso === 3 && dispositivoBLE) {
+                setTimeout(() => enviarComando('GET_VALUES'), 500);
+            } else if (nuevoPaso === 4) {
+                actualizarDashboardInfo();
+                if (dispositivoBLE && !monitoringActive) {
+                    setTimeout(() => iniciarMonitoreo(), 1000);
+                }
+                
+                // Redimensionar gráficas
+                setTimeout(() => {
+                    if (fsrChart) {
+                        fsrChart.resize();
+                        accelChart.resize();
+                        gyroChart.resize();
+                        pressureChart.resize();
+                    }
+                }, 500);
+            }
+        }
+        
+        function actualizarBotones(paso) {
+            volverBtn.textContent = paso === 1 ? 'Cancelar' : 'Volver';
+            
+            if (paso === totalSteps) {
+                siguienteBtn.textContent = 'Finalizar';
+                siguienteBtn.style.backgroundColor = '#00ff88';
+            } else {
+                siguienteBtn.textContent = 'Siguiente';
+                siguienteBtn.style.backgroundColor = '#00e5ff';
+            }
+            
+            if (paso === 1) {
+                siguienteBtn.disabled = !validarNombreUsuario();
+            } 
+            else if (paso === 2 && !dispositivoBLE) {
+                siguienteBtn.disabled = true;
+            } 
+            else if (paso === 3 && (!dispositivoBLE || !calibrationComplete.style.display || calibrationComplete.style.display === 'none')) {
+                siguienteBtn.disabled = true;
+            } 
+            else {
+                siguienteBtn.disabled = false;
+            }
+        }
+        
+        // ============================================
+        // EVENT LISTENERS PARA BOTONES PRINCIPALES
+        // ============================================
+        volverBtn.addEventListener('click', function() {
+            if (currentStep === 1) {
+                if (confirm('¿Seguro que quieres cancelar la configuración?')) {
+                    window.location.href = 'index.html';
+                }
+            } else {
+                cambiarPaso(currentStep - 1);
+            }
+        });
+        
+        // ============================================
+        // FUNCIONES DE CONEXIÓN BLUETOOTH
+        // ============================================
+        buscarDispositivoBtn.addEventListener('click', conectarBluetooth);
+        
+        async function conectarBluetooth() {
+            if (!navigator.bluetooth) {
+                mostrarErrorBluetooth('Bluetooth no soportado en este navegador');
+                return;
+            }
+            
+            estadoBusqueda.textContent = 'Buscando dispositivo BioTalus-Pro...';
+            estadoBusqueda.style.color = '#00e5ff';
+            buscarDispositivoBtn.disabled = true;
+            buscarDispositivoBtn.innerHTML = '🔍 Buscando...';
+            detallesDispositivo.textContent = 'Escaneando dispositivos Bluetooth LE...';
+            
+            try {
+                dispositivoBLE = await navigator.bluetooth.requestDevice({
+                    filters: [{ name: "BioTalus-Pro" }],
+                    optionalServices: ['6e400001-b5a3-f393-e0a9-e50e24dcca9e']
+                });
+                
+                estadoBusqueda.textContent = `Dispositivo encontrado: ${dispositivoBLE.name}`;
+                detallesDispositivo.innerHTML = `ID: ${dispositivoBLE.id}<br>Conectando...`;
+                
+                servidorGATT = await dispositivoBLE.gatt.connect();
+                const service = await servidorGATT.getPrimaryService('6e400001-b5a3-f393-e0a9-e50e24dcca9e');
+                txCharacteristic = await service.getCharacteristic('6e400002-b5a3-f393-e0a9-e50e24dcca9e');
+                rxCharacteristic = await service.getCharacteristic('6e400003-b5a3-f393-e0a9-e50e24dcca9e');
+                
+                await txCharacteristic.startNotifications();
+                txCharacteristic.addEventListener('characteristicvaluechanged', manejarNotificaciones);
+                
+                dispositivoBLE.addEventListener('gattserverdisconnected', manejarDesconexion);
+                
+                estadoBusqueda.textContent = '✅ Conexión exitosa con BioTalus-Pro';
+                estadoBusqueda.style.color = '#00ff88';
+                detallesDispositivo.innerHTML = 
+                    `Dispositivo: ${dispositivoBLE.name}<br>` +
+                    `Conectado via Bluetooth LE`;
+                
+                buscarDispositivoBtn.innerHTML = '✅ Conectado';
+                buscarDispositivoBtn.style.backgroundColor = '#00ff88';
+                
+                siguienteBtn.disabled = false;
+                calibrarTodoBtn.disabled = false;
+                calibrarFSRBtn.disabled = false;
+                calibrarMPUBtn.disabled = false;
+                
+                estadoCalibracion.textContent = 'Listo para calibrar';
+                estadoCalibracion.style.color = '#00e5ff';
+                
+                actualizarDashboardInfo();
+                setTimeout(() => enviarComando('GET_VALUES'), 1000);
+                
+            } catch (error) {
+                console.error('Error Bluetooth:', error);
+                mostrarErrorBluetooth(error);
+                buscarDispositivoBtn.disabled = false;
+                buscarDispositivoBtn.innerHTML = '🔍 Buscar Dispositivo BioTalus-Pro';
+            }
+        }
+        
+        function mostrarErrorBluetooth(error) {
+            estadoBusqueda.textContent = `Error: ${error.message || error}`;
+            estadoBusqueda.style.color = '#ff4444';
+            
+            if (error.name === 'NotFoundError') {
+                detallesDispositivo.innerHTML = 
+                    'No se encontró el dispositivo BioTalus-Pro.<br>' +
+                    'Asegúrate de que:<br>' +
+                    '• El ESP32 esté encendido<br>' +
+                    '• Esté publicitándose como "BioTalus-Pro"<br>' +
+                    '• Esté en modo visible';
+            } else if (error.name === 'SecurityError') {
+                detallesDispositivo.innerHTML = 'Error de seguridad. Usa HTTPS para conexión Bluetooth.';
+            } else {
+                detallesDispositivo.innerHTML = `Error: ${error.message}`;
+            }
+        }
+        
+        function manejarDesconexion() {
+            estadoBusqueda.textContent = '❌ Dispositivo desconectado';
+            estadoBusqueda.style.color = '#ff4444';
+            detallesDispositivo.textContent = 'Se perdió la conexión Bluetooth';
+            
+            buscarDispositivoBtn.disabled = false;
+            buscarDispositivoBtn.innerHTML = '🔍 Buscar Dispositivo BioTalus-Pro';
+            buscarDispositivoBtn.style.backgroundColor = '';
+            
+            calibrarTodoBtn.disabled = true;
+            calibrarFSRBtn.disabled = true;
+            calibrarMPUBtn.disabled = true;
+            
+            estadoCalibracion.textContent = 'Dispositivo desconectado';
+            estadoCalibracion.style.color = '#ff4444';
+            
+            siguienteBtn.disabled = true;
+            
+            if (monitoringActive) {
+                detenerMonitoreo();
+            }
+            
+            dispositivoBLE = null;
+            servidorGATT = null;
+            actualizarDashboardInfo();
+        }
+        
+        // ============================================
+        // FUNCIONES DE CALIBRACIÓN
+        // ============================================
+        calibrarTodoBtn.addEventListener('click', function() {
+            iniciarCalibracion('ALL');
+        });
+        
+        calibrarFSRBtn.addEventListener('click', function() {
+            iniciarCalibracion('FSR');
+        });
+        
+        calibrarMPUBtn.addEventListener('click', function() {
+            iniciarCalibracion('MPU');
+        });
+        
+        function iniciarCalibracion(tipo) {
+            if (!calibrationActive && dispositivoBLE) {
+                calibrationActive = true;
+                calibrationType = tipo;
+                
+                calibrationComplete.style.display = 'none';
+                progressContainer.style.display = 'block';
+                progressFill.style.width = '0%';
+                progressText.textContent = '0%';
+                progressDetail.textContent = '';
+                
+                calibrarTodoBtn.disabled = true;
+                calibrarFSRBtn.disabled = true;
+                calibrarMPUBtn.disabled = true;
+                siguienteBtn.disabled = true;
+                
+                let comando = '';
+                let mensaje = '';
+                let tiempoEstimado = 0;
+                
+                switch(tipo) {
+                    case 'ALL':
+                        comando = 'CALIBRATE_ALL';
+                        mensaje = 'Calibrando FSR y MPU6050...';
+                        tiempoEstimado = 30;
+                        break;
+                    case 'FSR':
+                        comando = 'CALIBRATE_FSR';
+                        mensaje = 'Calibrando sensores FSR...';
+                        tiempoEstimado = 15;
+                        break;
+                    case 'MPU':
+                        comando = 'CALIBRATE_MPU';
+                        mensaje = 'Calibrando MPU6050...';
+                        tiempoEstimado = 20;
+                        break;
+                }
+                
+                estadoCalibracion.textContent = mensaje;
+                estadoCalibracion.style.color = '#ff6b00';
+                detallesCalibracion.textContent = 'Mantén el dispositivo estático...';
+                
+                enviarComando(comando);
+                
+                let progreso = 0;
+                const intervalo = setInterval(() => {
+                    if (!calibrationActive) {
+                        clearInterval(intervalo);
+                        return;
+                    }
+                    
+                    progreso += (100 / tiempoEstimado);
+                    if (progreso <= 100) {
+                        progressFill.style.width = `${progreso}%`;
+                        progressText.textContent = `${Math.round(progreso)}%`;
+                        
+                        if (tipo === 'ALL') {
+                            if (progreso < 50) {
+                                progressDetail.textContent = 'Calibrando FSR...';
+                            } else {
+                                progressDetail.textContent = 'Calibrando MPU6050...';
+                            }
+                        } else if (tipo === 'FSR') {
+                            progressDetail.textContent = 'Midiendo valores de reposo...';
+                        } else if (tipo === 'MPU') {
+                            progressDetail.textContent = 'Calculando offsets...';
+                        }
+                    }
+                    
+                    if (progreso >= 100) {
+                        clearInterval(intervalo);
+                        setTimeout(finalizarCalibracion, 1000);
+                    }
+                }, 1000);
+            }
+        }
+        
+        function finalizarCalibracion() {
+            calibrationActive = false;
+            
+            progressFill.style.width = '100%';
+            progressText.textContent = '100%';
+            
+            setTimeout(() => {
+                progressContainer.style.display = 'none';
+                calibrationComplete.style.display = 'block';
+                
+                estadoCalibracion.textContent = `✅ Calibración ${calibrationType === 'ALL' ? 'completa' : 'finalizada'}`;
+                estadoCalibracion.style.color = '#00ff88';
+                detallesCalibracion.textContent = 'Offsets calculados y guardados';
+                
+                calibrarTodoBtn.disabled = false;
+                calibrarFSRBtn.disabled = false;
+                calibrarMPUBtn.disabled = false;
+                siguienteBtn.disabled = false;
+                
+                guardarDatos();
+                actualizarResultados();
+                actualizarDashboardInfo();
+                enviarComando('GET_VALUES');
+            }, 500);
+        }
+        
+        function actualizarResultados() {
+            resultsFSRText.textContent = sensorOffsets.join(', ');
+            
+            if (mpuData.mpuDetected) {
+                const accel = mpuData.offsets.accel;
+                const gyro = mpuData.offsets.gyro;
+                resultsMPUText.textContent = 
+                    `Accel: X=${accel.x.toFixed(3)}, Y=${accel.y.toFixed(3)}, Z=${accel.z.toFixed(3)} | ` +
+                    `Gyro: X=${gyro.x.toFixed(5)}, Y=${gyro.y.toFixed(5)}, Z=${gyro.z.toFixed(5)} | ` +
+                    `Temp: ${mpuData.offsets.temp.toFixed(1)}°C`;
+            } else {
+                resultsMPUText.textContent = 'MPU6050 no detectado';
+            }
+        }
+        
+        // ============================================
+        // FUNCIONES DE VISUALIZACIÓN DE SENSORES
+        // ============================================
+        function inicializarSensores() {
+            sensorGrid.innerHTML = '';
+            const sensorNames = [
+                'Metatarso 1', 'Metatarso 2', 'Metatarso 3',
+                'Arco Superior', 'Arco Inferior', 'Talón'
+            ];
+            
+            for (let i = 0; i < 6; i++) {
+                const sensorDiv = document.createElement('div');
+                sensorDiv.className = 'sensor-item';
+                sensorDiv.id = `sensor-${i}`;
+                sensorDiv.innerHTML = `
+                    <div class="sensor-label">${sensorNames[i]}</div>
+                    <div class="sensor-value" id="value-${i}">0</div>
+                    <div class="sensor-offset">Offset: <span id="offset-${i}">0</span></div>
+                `;
+                sensorGrid.appendChild(sensorDiv);
+            }
+        }
+        
+        function inicializarDashboardFSR() {
+            fsrValuesGrid.innerHTML = '';
+            const sensorNames = [
+                'FSR 1', 'FSR 2', 'FSR 3',
+                'FSR 4', 'FSR 5', 'FSR 6'
+            ];
+            
+            for (let i = 0; i < 6; i++) {
+                const valueItem = document.createElement('div');
+                valueItem.className = 'value-item';
+                valueItem.innerHTML = `
+                    <span class="value-label">${sensorNames[i]}:</span>
+                    <span class="value-number" id="dashboardFSR${i}">0</span>
+                `;
+                fsrValuesGrid.appendChild(valueItem);
+            }
+        }
+        
+        function actualizarValoresSensores() {
+            for (let i = 0; i < 6; i++) {
+                const valueElement = document.getElementById(`value-${i}`);
+                const offsetElement = document.getElementById(`offset-${i}`);
+                const sensorItem = document.getElementById(`sensor-${i}`);
+                const dashboardElement = document.getElementById(`dashboardFSR${i}`);
+                
+                if (valueElement) {
+                    valueElement.textContent = sensorValues[i];
+                    
+                    if (sensorValues[i] > 50) {
+                        sensorItem.classList.add('active');
+                        valueElement.style.color = '#ff6b00';
+                    } else {
+                        sensorItem.classList.remove('active');
+                        valueElement.style.color = '#00e5ff';
+                    }
+                }
+                
+                if (offsetElement) {
+                    offsetElement.textContent = sensorOffsets[i];
+                }
+                
+                if (dashboardElement) {
+                    dashboardElement.textContent = sensorValues[i];
+                    if (sensorValues[i] > 50) {
+                        dashboardElement.style.color = '#ff6b00';
+                    } else {
+                        dashboardElement.style.color = '#00e5ff';
+                    }
+                }
+            }
+        }
+        
+        function actualizarValoresDisplay() {
+            actualizarValoresSensores();
+            actualizarMPUDisplay();
+            
+            dashboardAccelX.textContent = mpuData.accel.x.toFixed(2);
+            dashboardAccelY.textContent = mpuData.accel.y.toFixed(2);
+            dashboardAccelZ.textContent = mpuData.accel.z.toFixed(2);
+            dashboardGyroX.textContent = mpuData.gyro.x.toFixed(5);
+            dashboardGyroY.textContent = mpuData.gyro.y.toFixed(5);
+            dashboardGyroZ.textContent = mpuData.gyro.z.toFixed(5);
+        }
+        
+        function actualizarMPUDisplay() {
+            accelX.textContent = mpuData.accel.x.toFixed(2);
+            accelY.textContent = mpuData.accel.y.toFixed(2);
+            accelZ.textContent = mpuData.accel.z.toFixed(2);
+            
+            accelOffsetX.textContent = mpuData.offsets.accel.x.toFixed(3);
+            accelOffsetY.textContent = mpuData.offsets.accel.y.toFixed(3);
+            accelOffsetZ.textContent = mpuData.offsets.accel.z.toFixed(3);
+            
+            gyroX.textContent = mpuData.gyro.x.toFixed(5);
+            gyroY.textContent = mpuData.gyro.y.toFixed(5);
+            gyroZ.textContent = mpuData.gyro.z.toFixed(5);
+            
+            gyroOffsetX.textContent = mpuData.offsets.gyro.x.toFixed(5);
+            gyroOffsetY.textContent = mpuData.offsets.gyro.y.toFixed(5);
+            gyroOffsetZ.textContent = mpuData.offsets.gyro.z.toFixed(5);
+            
+            tempValue.textContent = mpuData.temp.toFixed(1);
+            tempOffset.textContent = mpuData.offsets.temp.toFixed(1);
+            
+            if (mpuData.mpuDetected) {
+                mpuStatus.textContent = '✅ Conectado';
+                mpuStatus.style.color = '#00ff88';
+            } else {
+                mpuStatus.textContent = '❌ No detectado';
+                mpuStatus.style.color = '#ff4444';
+            }
+        }
+        
+        // ============================================
+        // FUNCIONES DE GRÁFICAS
+        // ============================================
+        function inicializarGraficas() {
+            // 1. Gráfica de FSR
+            const fsrCtx = document.getElementById('fsrChart').getContext('2d');
+            fsrChart = new Chart(fsrCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        { label: 'FSR 1', data: [], borderColor: fsrColors[0], backgroundColor: fsrColors[0].replace('0.8', '0.1'), fill: true, tension: 0.4 },
+                        { label: 'FSR 2', data: [], borderColor: fsrColors[1], backgroundColor: fsrColors[1].replace('0.8', '0.1'), fill: true, tension: 0.4 },
+                        { label: 'FSR 3', data: [], borderColor: fsrColors[2], backgroundColor: fsrColors[2].replace('0.8', '0.1'), fill: true, tension: 0.4 },
+                        { label: 'FSR 4', data: [], borderColor: fsrColors[3], backgroundColor: fsrColors[3].replace('0.8', '0.1'), fill: true, tension: 0.4 },
+                        { label: 'FSR 5', data: [], borderColor: fsrColors[4], backgroundColor: fsrColors[4].replace('0.8', '0.1'), fill: true, tension: 0.4 },
+                        { label: 'FSR 6', data: [], borderColor: fsrColors[5], backgroundColor: fsrColors[5].replace('0.8', '0.1'), fill: true, tension: 0.4 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: true, position: 'top', labels: { color: '#ccc', font: { size: 10 } } }
+                    },
+                    scales: {
+                        x: { 
+                            grid: { color: 'rgba(51, 51, 51, 0.5)' },
+                            ticks: { color: '#888' }
+                        },
+                        y: { 
+                            beginAtZero: true,
+                            max: 4096,
+                            grid: { color: 'rgba(51, 51, 51, 0.5)' },
+                            ticks: { color: '#888' }
+                        }
+                    }
+                }
+            });
+
+            // 2. Gráfica de Aceleración
+            const accelCtx = document.getElementById('accelChart').getContext('2d');
+            accelChart = new Chart(accelCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        { label: 'Accel X', data: [], borderColor: accelColors[0], backgroundColor: accelColors[0].replace('1', '0.1'), fill: true, tension: 0.3 },
+                        { label: 'Accel Y', data: [], borderColor: accelColors[1], backgroundColor: accelColors[1].replace('1', '0.1'), fill: true, tension: 0.3 },
+                        { label: 'Accel Z', data: [], borderColor: accelColors[2], backgroundColor: accelColors[2].replace('1', '0.1'), fill: true, tension: 0.3 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: true, position: 'top', labels: { color: '#ccc', font: { size: 10 } } }
+                    },
+                    scales: {
+                        x: { 
+                            grid: { color: 'rgba(51, 51, 51, 0.5)' },
+                            ticks: { color: '#888' }
+                        },
+                        y: { 
+                            min: -20,
+                            max: 20,
+                            grid: { color: 'rgba(51, 51, 51, 0.5)' },
+                            ticks: { color: '#888' }
+                        }
+                    }
+                }
+            });
+
+            // 3. Gráfica de Giroscopio
+            const gyroCtx = document.getElementById('gyroChart').getContext('2d');
+            gyroChart = new Chart(gyroCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        { label: 'Gyro X', data: [], borderColor: 'rgba(255, 159, 64, 1)', backgroundColor: 'rgba(255, 159, 64, 0.1)', fill: true, tension: 0.3 },
+                        { label: 'Gyro Y', data: [], borderColor: 'rgba(153, 102, 255, 1)', backgroundColor: 'rgba(153, 102, 255, 0.1)', fill: true, tension: 0.3 },
+                        { label: 'Gyro Z', data: [], borderColor: 'rgba(255, 205, 86, 1)', backgroundColor: 'rgba(255, 205, 86, 0.1)', fill: true, tension: 0.3 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: true, position: 'top', labels: { color: '#ccc', font: { size: 10 } } }
+                    },
+                    scales: {
+                        x: { 
+                            grid: { color: 'rgba(51, 51, 51, 0.5)' },
+                            ticks: { color: '#888' }
+                        },
+                        y: { 
+                            min: -10,
+                            max: 10,
+                            grid: { color: 'rgba(51, 51, 51, 0.5)' },
+                            ticks: { color: '#888' }
+                        }
+                    }
+                }
+            });
+
+            // 4. Gráfica de Distribución de Presión (Barras)
+            const pressureCtx = document.getElementById('pressureChart').getContext('2d');
+            pressureChart = new Chart(pressureCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Hallux', 'Segundo', 'Tercero', 'Arc. Sup', 'Arc. Inf', 'Talón'],
+                    datasets: [{
+                        label: 'Presión Actual',
+                        data: [0, 0, 0, 0, 0, 0],
+                        backgroundColor: fsrColors.map(color => color.replace('0.8', '0.7')),
+                        borderColor: fsrColors.map(color => color.replace('0.8', '1')),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: { label: ctx => `Presión: ${ctx.raw}` } }
+                    },
+                    scales: {
+                        x: { 
+                            grid: { color: 'rgba(51, 51, 51, 0.5)' },
+                            ticks: { color: '#ccc' }
+                        },
+                        y: { 
+                            beginAtZero: true,
+                            max: 4096,
+                            grid: { color: 'rgba(51, 51, 51, 0.5)' },
+                            ticks: { color: '#ccc' }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function actualizarGraficas(timestamp, fsrValues, mpuData) {
+            // Agregar timestamp
+            const timeLabel = new Date().toLocaleTimeString('es-ES', { 
+                hour12: false, 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit' 
+            });
+            
+            // Actualizar buffer manteniendo máximo de puntos
+            if (chartDataBuffer.labels.length >= maxDataPoints) {
+                chartDataBuffer.labels.shift();
+                chartDataBuffer.fsr.forEach(arr => arr.shift());
+                chartDataBuffer.accel.forEach(arr => arr.shift());
+                chartDataBuffer.gyro.forEach(arr => arr.shift());
+            }
+            
+            chartDataBuffer.labels.push(timeLabel);
+            
+            // Actualizar datos FSR
+            for (let i = 0; i < 6; i++) {
+                chartDataBuffer.fsr[i].push(fsrValues[i] || 0);
+            }
+            
+            // Actualizar datos IMU si están disponibles
+            if (mpuData && mpuData.mpuDetected) {
+                chartDataBuffer.accel[0].push(mpuData.accel.x || 0);
+                chartDataBuffer.accel[1].push(mpuData.accel.y || 0);
+                chartDataBuffer.accel[2].push(mpuData.accel.z || 0);
+                
+                chartDataBuffer.gyro[0].push(mpuData.gyro.x || 0);
+                chartDataBuffer.gyro[1].push(mpuData.gyro.y || 0);
+                chartDataBuffer.gyro[2].push(mpuData.gyro.z || 0);
+            } else {
+                // Si no hay datos IMU, agregar ceros
+                chartDataBuffer.accel[0].push(0);
+                chartDataBuffer.accel[1].push(0);
+                chartDataBuffer.accel[2].push(0);
+                chartDataBuffer.gyro[0].push(0);
+                chartDataBuffer.gyro[1].push(0);
+                chartDataBuffer.gyro[2].push(0);
+            }
+            
+            // Actualizar gráficas solo si están inicializadas
+            if (fsrChart) {
+                // Actualizar gráfica FSR
+                fsrChart.data.labels = chartDataBuffer.labels;
+                for (let i = 0; i < 6; i++) {
+                    fsrChart.data.datasets[i].data = chartDataBuffer.fsr[i];
+                }
+                fsrChart.update('none');
+                
+                // Actualizar gráfica de aceleración
+                accelChart.data.labels = chartDataBuffer.labels;
+                for (let i = 0; i < 3; i++) {
+                    accelChart.data.datasets[i].data = chartDataBuffer.accel[i];
+                }
+                accelChart.update('none');
+                
+                // Actualizar gráfica de giroscopio
+                gyroChart.data.labels = chartDataBuffer.labels;
+                for (let i = 0; i < 3; i++) {
+                    gyroChart.data.datasets[i].data = chartDataBuffer.gyro[i];
+                }
+                gyroChart.update('none');
+                
+                // Actualizar gráfica de barras (distribución)
+                const totalPressureValue = fsrValues.reduce((a, b) => a + b, 0);
+                totalPressure.textContent = totalPressureValue;
+                
+                // Actualizar datos de gravedad
+                const gravityValueText = mpuData && mpuData.accel.z ? mpuData.accel.z.toFixed(2) : '0.00';
+                gravityValue.textContent = gravityValueText;
+                
+                pressureChart.data.datasets[0].data = fsrValues;
+                pressureChart.update();
+                
+                // Actualizar contador de datos
+                dataCount.textContent = chartDataBuffer.labels.length;
+            }
+        }
+        
+        // ============================================
+        // MANEJO DE DATOS BLE
+        // ============================================
+        function manejarNotificaciones(event) {
+            const value = event.target.value;
+            const data = new TextDecoder().decode(value);
+            const parts = data.split(',');
+            
+            console.log("Datos BLE recibidos:", data);
+            
+            if (parts[0] === 'DATA') {
+                if (parts.length >= 14) {
+                    const timestamp = parts[1];
+                    const now = new Date();
+                    const timeString = now.toLocaleTimeString('es-ES', { 
+                        hour12: false,
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                    });
+                    
+                    // Valores FSR (índices 2-7)
+                    const fsrValues = [];
+                    for (let i = 0; i < 6; i++) {
+                        const val = parseInt(parts[i + 2]) || 0;
+                        fsrValues.push(val);
+                        sensorValues[i] = val;
+                    }
+                    
+                    // Valores MPU6050 (índices 8-14)
+                    if (parts[8] !== undefined && parts[8] !== '0') {
+                        mpuData.mpuDetected = true;
+                        mpuData.accel.x = parseFloat(parts[8]) || 0;
+                        mpuData.accel.y = parseFloat(parts[9]) || 0;
+                        mpuData.accel.z = parseFloat(parts[10]) || 0;
+                        mpuData.gyro.x = parseFloat(parts[11]) || 0;
+                        mpuData.gyro.y = parseFloat(parts[12]) || 0;
+                        mpuData.gyro.z = parseFloat(parts[13]) || 0;
+                        mpuData.temp = parseFloat(parts[14]) || 0;
+                    } else {
+                        mpuData.mpuDetected = false;
+                    }
+                    
+                    actualizarValoresDisplay();
+                    
+                    // Actualizar gráficas
+                    actualizarGraficas(timestamp, fsrValues, mpuData);
+                    
+                    if (monitoringActive) {
+                        // Verificar si es momento de guardar datos (cada 5 segundos)
+                        const currentTime = new Date().getTime();
+                        if (!lastSaveTime || (currentTime - lastSaveTime) >= SAVE_INTERVAL) {
+                            guardarDatoActual(timeString);
+                            lastSaveTime = currentTime;
+                        }
+                    }
+                } else {
+                    console.warn("Formato DATA incorrecto. Elementos:", parts.length);
+                }
+            } 
+            else if (parts[0] === 'CAL_RESULTS') {
+                if (parts.length >= 14) {
+                    // Offsets FSR (índices 1-6)
+                    for (let i = 0; i < 6; i++) {
+                        sensorOffsets[i] = parseInt(parts[i + 1]) || 0;
+                    }
+                    
+                    // Offsets MPU (índices 7-13)
+                    mpuData.offsets.accel.x = parseFloat(parts[7]) || 0;
+                    mpuData.offsets.accel.y = parseFloat(parts[8]) || 0;
+                    mpuData.offsets.accel.z = parseFloat(parts[9]) || 0;
+                    mpuData.offsets.gyro.x = parseFloat(parts[10]) || 0;
+                    mpuData.offsets.gyro.y = parseFloat(parts[11]) || 0;
+                    mpuData.offsets.gyro.z = parseFloat(parts[12]) || 0;
+                    mpuData.offsets.temp = parseFloat(parts[13]) || 0;
+                    
+                    actualizarValoresDisplay();
+                    actualizarResultados();
+                    actualizarDashboardInfo();
+                }
+            }
+        }
+        
+        function enviarComando(comando) {
+            if (rxCharacteristic) {
+                console.log("Enviando comando:", comando);
+                const encoder = new TextEncoder();
+                rxCharacteristic.writeValue(encoder.encode(comando))
+                    .catch(error => console.error('Error enviando comando:', error));
+            }
+        }
+        
+        // ============================================
+        // FUNCIONES DE GUARDADO Y LISTA DE DATOS
+        // ============================================
+        function guardarDatoActual(timestamp) {
+            // Calcular tiempo activo
+            let uptime = "00:00:00";
+            if (monitoringStartTime) {
+                const now = new Date();
+                const diff = Math.floor((now - monitoringStartTime) / 1000);
+                const hours = Math.floor(diff / 3600);
+                const minutes = Math.floor((diff % 3600) / 60);
+                const seconds = diff % 60;
+                uptime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+            
+            // Crear objeto de datos con todos los valores
+            const dato = {
+                id: Date.now(),
+                timestamp: timestamp,
+                date: new Date().toLocaleDateString('es-ES'),
+                time: new Date().toLocaleTimeString('es-ES', { 
+                    hour12: false,
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                }),
+                uptime: uptime,
+                fsr1: sensorValues[0],
+                fsr2: sensorValues[1],
+                fsr3: sensorValues[2],
+                fsr4: sensorValues[3],
+                fsr5: sensorValues[4],
+                fsr6: sensorValues[5],
+                accelX: mpuData.accel.x,
+                accelY: mpuData.accel.y,
+                accelZ: mpuData.accel.z,
+                gyroX: mpuData.gyro.x,
+                gyroY: mpuData.gyro.y,
+                gyroZ: mpuData.gyro.z,
+                temp: mpuData.temp,
+                avgFSR: sensorValues.reduce((a, b) => a + b, 0) / sensorValues.length
+            };
+            
+            // Agregar a la lista de datos
+            savedData.unshift(dato);
+            
+            // Limitar a los últimos 30 registros
+            if (savedData.length > 30) {
+                savedData = savedData.slice(0, 30);
+            }
+            
+            // Actualizar la lista visual
+            actualizarListaDatos();
+            
+            // Actualizar última captura
+            lastCaptureTime.textContent = dato.time;
+            
+            // Guardar en localStorage
+            guardarDatosMonitoreo();
+        }
+        
+        function actualizarListaDatos() {
+            // Actualizar contador
+            totalDataCount.textContent = savedData.length;
+            
+            // Mostrar/ocultar mensaje de no datos
+            if (savedData.length === 0) {
+                noDataMessage.style.display = 'block';
+                return;
+            } else {
+                noDataMessage.style.display = 'none';
+            }
+            
+            // Limpiar lista actual
+            dataList.innerHTML = '';
+            
+            // Agregar cada dato a la lista
+            savedData.forEach((dato, index) => {
+                const listItem = document.createElement('li');
+                listItem.className = 'data-item';
+                
+                // Crear HTML con estructura organizada
+                listItem.innerHTML = `
+                    <div class="data-header">
+                        <div class="data-timestamp">${dato.time}</div>
+                        <div class="data-uptime">⏱ ${dato.uptime}</div>
+                    </div>
+                    
+                    <div class="data-content">
+                        <!-- Sección FSR -->
+                        <div class="data-section">
+                            <div class="data-section-title">
+                                <span style="color: #ff6b00;">🦶</span> Sensores FSR
+                            </div>
+                            <div class="data-values-grid">
+                                ${[1, 2, 3, 4, 5, 6].map(i => `
+                                    <div class="data-value-row">
+                                        <span class="data-value-label">FSR ${i}:</span>
+                                        <span class="data-value-number ${dato[`fsr${i}`] > 50 ? 'data-value-high' : ''}">
+                                            ${dato[`fsr${i}`]}
+                                        </span>
+                                    </div>
+                                `).join('')}
+                                <div class="data-value-row">
+                                    <span class="data-value-label">Promedio:</span>
+                                    <span class="data-value-number ${dato.avgFSR > 50 ? 'data-value-high' : ''}">
+                                        ${dato.avgFSR.toFixed(1)}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Sección Acelerómetro -->
+                        <div class="data-section">
+                            <div class="data-section-title">
+                                <span style="color: #00ff88;">📈</span> Acelerómetro (m/s²)
+                            </div>
+                            <div class="data-values-grid">
+                                <div class="data-value-row">
+                                    <span class="data-value-label">Eje X:</span>
+                                    <span class="data-value-number">${dato.accelX.toFixed(2)}</span>
+                                </div>
+                                <div class="data-value-row">
+                                    <span class="data-value-label">Eje Y:</span>
+                                    <span class="data-value-number">${dato.accelY.toFixed(2)}</span>
+                                </div>
+                                <div class="data-value-row">
+                                    <span class="data-value-label">Eje Z:</span>
+                                    <span class="data-value-number ${Math.abs(dato.accelZ - 9.81) > 0.5 ? 'data-value-high' : ''}">
+                                        ${dato.accelZ.toFixed(2)}
+                                    </span>
+                                </div>
+                                <div class="data-value-row">
+                                    <span class="data-value-label">Total:</span>
+                                    <span class="data-value-number">
+                                        ${Math.sqrt(dato.accelX**2 + dato.accelY**2 + dato.accelZ**2).toFixed(2)}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Sección Giroscopio y Temperatura -->
+                        <div class="data-section">
+                            <div class="data-section-title">
+                                <span style="color: #00e5ff;">🔄</span> Giroscopio (°/s)
+                            </div>
+                            <div class="data-values-grid">
+                                <div class="data-value-row">
+                                    <span class="data-value-label">Giro X:</span>
+                                    <span class="data-value-number ${Math.abs(dato.gyroX) > 0.5 ? 'data-value-high' : ''}">
+                                        ${dato.gyroX.toFixed(3)}
+                                    </span>
+                                </div>
+                                <div class="data-value-row">
+                                    <span class="data-value-label">Giro Y:</span>
+                                    <span class="data-value-number ${Math.abs(dato.gyroY) > 0.5 ? 'data-value-high' : ''}">
+                                        ${dato.gyroY.toFixed(3)}
+                                    </span>
+                                </div>
+                                <div class="data-value-row">
+                                    <span class="data-value-label">Giro Z:</span>
+                                    <span class="data-value-number ${Math.abs(dato.gyroZ) > 0.5 ? 'data-value-high' : ''}">
+                                        ${dato.gyroZ.toFixed(3)}
+                                    </span>
+                                </div>
+                                <div class="data-value-row">
+                                    <span class="data-value-label">Temperatura:</span>
+                                    <span class="data-value-number ${dato.temp > 30 ? 'data-value-high' : ''}">
+                                        ${dato.temp.toFixed(1)}°C
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                dataList.appendChild(listItem);
+            });
+            
+            // Hacer scroll al principio
+            dataListContainer.scrollTop = 0;
+        }
+        
+        function limpiarDatos() {
+            if (confirm('¿Estás seguro de que quieres limpiar todos los datos guardados?')) {
+                savedData = [];
+                actualizarListaDatos();
+                localStorage.removeItem('bioTalusMonitoreo');
+                lastCaptureTime.textContent = '--:--:--';
+                alert('Datos limpiados correctamente.');
+            }
+        }
+        
+        function exportarDatosCSV() {
+            if (savedData.length === 0) {
+                alert('No hay datos para exportar.');
+                return;
+            }
+            
+            let csvContent = "Fecha,Hora,Tiempo Activo,FSR1,FSR2,FSR3,FSR4,FSR5,FSR6,FSR_Promedio,Accel_X,Accel_Y,Accel_Z,Accel_Total,Gyro_X,Gyro_Y,Gyro_Z,Temperatura\n";
+            
+            savedData.forEach(dato => {
+                const accelTotal = Math.sqrt(dato.accelX**2 + dato.accelY**2 + dato.accelZ**2);
+                
+                csvContent += `${dato.date},`;
+                csvContent += `${dato.time},`;
+                csvContent += `${dato.uptime},`;
+                csvContent += `${dato.fsr1},${dato.fsr2},${dato.fsr3},${dato.fsr4},${dato.fsr5},${dato.fsr6},`;
+                csvContent += `${dato.avgFSR.toFixed(2)},`;
+                csvContent += `${dato.accelX.toFixed(2)},`;
+                csvContent += `${dato.accelY.toFixed(2)},`;
+                csvContent += `${dato.accelZ.toFixed(2)},`;
+                csvContent += `${accelTotal.toFixed(2)},`;
+                csvContent += `${dato.gyroX.toFixed(5)},`;
+                csvContent += `${dato.gyroY.toFixed(5)},`;
+                csvContent += `${dato.gyroZ.toFixed(5)},`;
+                csvContent += `${dato.temp.toFixed(1)}\n`;
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", `biotalus_datos_completos_${new Date().toISOString().slice(0, 10)}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            alert(`Datos exportados exitosamente. Total: ${savedData.length} muestras.`);
+        }
+        
+        function guardarDatosMonitoreo() {
+            const datosGuardar = {
+                savedData: savedData,
+                fechaActualizacion: new Date().toISOString()
+            };
+            
+            localStorage.setItem('bioTalusMonitoreo', JSON.stringify(datosGuardar));
+        }
+        
+        function cargarDatosMonitoreo() {
+            const datosGuardados = localStorage.getItem('bioTalusMonitoreo');
+            if (datosGuardados) {
+                try {
+                    const datos = JSON.parse(datosGuardados);
+                    savedData = datos.savedData || [];
+                    actualizarListaDatos();
+                } catch (e) {
+                    console.error('Error cargando datos de monitoreo:', e);
+                    savedData = [];
+                }
+            }
+        }
+        
+        // ============================================
+        // FUNCIONES DE MONITOREO
+        // ============================================
+        function iniciarMonitoreo() {
+            if (!dispositivoBLE) {
+                alert('Primero debes conectar el dispositivo Bluetooth.');
+                return;
+            }
+            
+            monitoringActive = true;
+            monitoringStartTime = new Date();
+            lastSaveTime = null;
+            
+            startMonitoringBtn.disabled = true;
+            stopMonitoringBtn.disabled = false;
+            
+            startMonitoringBtn.classList.remove('start');
+            startMonitoringBtn.classList.add('stop');
+            startMonitoringBtn.textContent = '⏸ Monitoreando...';
+            
+            enviarComando('START_MONITORING');
+            
+            // Guardar primer dato inmediatamente
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('es-ES', { 
+                hour12: false,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            guardarDatoActual(timeString);
+            
+            // Actualizar última captura
+            lastCaptureTime.textContent = timeString;
+            
+            alert('✅ Monitoreo iniciado. Los datos se guardarán automáticamente cada 5 segundos.');
+        }
+        
+        function detenerMonitoreo() {
+            monitoringActive = false;
+            
+            startMonitoringBtn.disabled = false;
+            stopMonitoringBtn.disabled = true;
+            
+            startMonitoringBtn.classList.remove('stop');
+            startMonitoringBtn.classList.add('start');
+            startMonitoringBtn.textContent = '▶ Iniciar Monitoreo';
+            
+            enviarComando('STOP_MONITORING');
+            
+            // Guardar datos al detener
+            guardarDatosMonitoreo();
+            
+            alert('⏸ Monitoreo detenido. Los datos han sido guardados.');
+        }
+        
+        function actualizarUptime() {
+            if (monitoringStartTime) {
+                const now = new Date();
+                const diff = Math.floor((now - monitoringStartTime) / 1000);
+                const hours = Math.floor(diff / 3600);
+                const minutes = Math.floor((diff % 3600) / 60);
+                const seconds = diff % 60;
+                
+                dashboardUptime.textContent = 
+                    `${hours.toString().padStart(2, '0')}:` +
+                    `${minutes.toString().padStart(2, '0')}:` +
+                    `${seconds.toString().padStart(2, '0')}`;
+            }
+        }
+        
+        function actualizarDashboardInfo() {
+            const nombre = document.getElementById('nombre').value;
+            dashboardUsername.textContent = nombre || 'No configurado';
+            
+            if (dispositivoBLE) {
+                dashboardDevice.textContent = dispositivoBLE.name;
+                dashboardDevice.style.color = '#00ff88';
+            } else {
+                dashboardDevice.textContent = 'No conectado';
+                dashboardDevice.style.color = '#ff4444';
+            }
+            
+            const calibrationComplete = localStorage.getItem('bioTalusUsuario');
+            if (calibrationComplete) {
+                const usuario = JSON.parse(calibrationComplete);
+                if (usuario.calibracionCompleta) {
+                    const fecha = new Date(usuario.ultimaConexion);
+                    dashboardCalibration.textContent = fecha.toLocaleDateString('es-ES') + ' ' + fecha.toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'});
+                    dashboardCalibration.style.color = '#00ff88';
+                } else {
+                    dashboardCalibration.textContent = 'No calibrado';
+                    dashboardCalibration.style.color = '#ff4444';
+                }
+            } else {
+                dashboardCalibration.textContent = 'No calibrado';
+                dashboardCalibration.style.color = '#ff4444';
+            }
+        }
+        
+        // ============================================
+        // MANEJO DE DATOS LOCALSTORAGE
+        // ============================================
+        function cargarDatosGuardados() {
+            const usuario = JSON.parse(localStorage.getItem('bioTalusUsuario'));
+            if (usuario) {
+                document.getElementById('nombre').value = usuario.nombre || '';
+                
+                if (usuario.offsets) {
+                    sensorOffsets = usuario.offsets;
+                    actualizarValoresSensores();
+                }
+                
+                if (usuario.mpuOffsets) {
+                    mpuData.offsets = usuario.mpuOffsets;
+                    actualizarMPUDisplay();
+                }
+            }
+        }
+        
+        function guardarDatos() {
+            const usuario = {
+                nombre: document.getElementById('nombre').value,
+                fecha: document.getElementById('fecha').value,
+                offsets: sensorOffsets,
+                mpuOffsets: mpuData.offsets,
+                dispositivoId: dispositivoBLE ? dispositivoBLE.id : null,
+                ultimaConexion: new Date().toISOString(),
+                calibracionCompleta: true
+            };
+            
+            localStorage.setItem('bioTalusUsuario', JSON.stringify(usuario));
+        }
+        
+        // ============================================
+        // FINALIZAR CONFIGURACIÓN
+        // ============================================
+        function finalizarConfiguracion() {
+            guardarDatos();
+            alert('✅ Configuración completada exitosamente\n\nEl sistema BioTalus Pro está listo para uso.');
+        }
+        
+        // ============================================
+        // LIMPIAR AL SALIR
+        // ============================================
+        window.addEventListener('beforeunload', function() {
+            if (txCharacteristic) {
+                txCharacteristic.stopNotifications();
+            }
+            if (servidorGATT && servidorGATT.connected) {
+                servidorGATT.disconnect();
+            }
+        });
+        
+        // ============================================
+        // FUNCIÓN DE SIMULACIÓN PARA PRUEBAS
+        // ============================================
+        function simularDatos() {
+            if (monitoringActive) {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('es-ES', { 
+                    hour12: false,
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+                
+                for (let i = 0; i < 6; i++) {
+                    sensorValues[i] = Math.floor(Math.random() * 100);
+                }
+                
+                mpuData.accel.x = (Math.random() * 2 - 1).toFixed(2);
+                mpuData.accel.y = (Math.random() * 2 - 1).toFixed(2);
+                mpuData.accel.z = 9.81 + (Math.random() * 0.2 - 0.1);
+                mpuData.gyro.x = (Math.random() * 0.02 - 0.01).toFixed(5);
+                mpuData.gyro.y = (Math.random() * 0.02 - 0.01).toFixed(5);
+                mpuData.gyro.z = (Math.random() * 0.02 - 0.01).toFixed(5);
+                mpuData.temp = 25.0 + (Math.random() * 2 - 1);
+                
+                actualizarValoresDisplay();
+                
+                // Actualizar gráficas con datos simulados
+                actualizarGraficas(Date.now(), sensorValues, mpuData);
+                
+                // Simular guardado cada 5 segundos
+                const currentTime = new Date().getTime();
+                if (!lastSaveTime || (currentTime - lastSaveTime) >= SAVE_INTERVAL) {
+                    guardarDatoActual(timeString);
+                    lastSaveTime = currentTime;
+                }
+            }
+        }
+        
+        // Descomentar la siguiente línea para probar sin conectar el dispositivo:
+        // setInterval(simularDatos, 1000);
+    </script>
+</body>
+</html>
